@@ -88,7 +88,7 @@ static SingleDownLoad *singleDownload = nil;
             NSString *str = model.title;
             [self.dic setValue:[NSString stringWithFormat:@"%f" , weakSelf.progress] forKey:str];
             
-            NSLog(@"%@已经下载了%f" , model.title , weakSelf.progress);
+//            NSLog(@"%@已经下载了%f" , model.title , weakSelf.progress);
             
         }];
         
@@ -134,6 +134,7 @@ static SingleDownLoad *singleDownload = nil;
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 //            NSLog(@"下载失败");
             UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@下载失败" , model.title] delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+            NSLog(@"*&*&^*^&*&^*");
             [alert show];
         }];
     
