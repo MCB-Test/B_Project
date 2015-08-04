@@ -1,0 +1,35 @@
+//
+//  Header.pch
+//  B_Project
+//
+//  Created by lanouhn on 15/7/28.
+//  Copyright (c) 2015年 lanou3G.com. All rights reserved.
+//
+
+#ifndef B_Project_Header_pch
+#define B_Project_Header_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+#import "AppDelegate.h"
+
+#import "AFAppDotNetAPIClient.h"
+
+#import "UIImageView+WebCache.h"
+#import "AFNetworking.h"
+#import "AFClient.h"
+#import "MBProgressHUD.h"
+
+#import "SinglePlay.h"
+#import "SingleDownLoad.h"
+
+#import "Model.h"
+#import "Downloaded.h"
+#import "Downloading.h"
+#import "CollectModel.h"
+
+#import "Reachability.h"
+
+#endif
+

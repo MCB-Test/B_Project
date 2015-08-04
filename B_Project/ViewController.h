@@ -10,6 +10,14 @@
 
 @interface ViewController : UIViewController
 
+@property (strong, nonatomic) IBOutlet UITableView *homeTableView;
+
+@property (strong, nonatomic) IBOutlet UIScrollView *homeScrollView;
+@property (nonatomic , strong) UISegmentedControl *homeSegment;
+
+@property (nonatomic , copy) NSString *homeUrl;
+
+@property (nonatomic , strong) MBProgressHUD *hud;
 
 @end
 

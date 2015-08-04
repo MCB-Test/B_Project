@@ -17,6 +17,32 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+
+    [AFAppDotNetAPIClient shareClientWithView:self.window];
+    
+    // 如果有未下载完的任务继续开始下载
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:@"Downloading"];
+    NSError *error = nil;
+    NSArray *arr = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
+    if (arr) {
+        for (Downloading *model in arr) {
+            
+            NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)firstObject];
+            NSString *filePath = [cache stringByAppendingString:[NSString stringWithFormat:@"/%@.mp4" , model.title]];
+            
+            NSFileManager *fm = [NSFileManager defaultManager];
+            
+            if ([fm fileExistsAtPath:filePath]) {
+                [fm removeItemAtPath:filePath error:nil];
+            }
+            
+            [[SingleDownLoad shareSingleDownload] downloadWithModel:model];
+        }
+    }else{
+        NSLog(@"获取数据失败");
+    }
+    
     return YES;
 }
 
