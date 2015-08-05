@@ -26,6 +26,9 @@
     NSError *error = nil;
     NSArray *arr = [self.managedObjectContext executeFetchRequest:fetchRequest error:&error];
     if (arr) {
+        
+        [SingleDownLoad shareSingleDownload].modelArray = [arr mutableCopy];
+        
         for (Downloading *model in arr) {
             
             NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)firstObject];

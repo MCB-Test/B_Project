@@ -71,9 +71,12 @@ static SingleDownLoad *singleDownload = nil;
         
         AFHTTPRequestOperation *opration = [[AFHTTPRequestOperation alloc]initWithRequest:request];
     
+    // 判断model存储数组里model数是否与operationArray里面任务数量相同，不同的话operationArray加上新任务
+    if (self.operationArray.count != self.modelArray.count) {
         // 将任务放进任务下载数组中
-    [self.operationArray addObject:opration];
-    
+        [self.operationArray addObject:opration];
+    }
+
         // 下载的方法中，我们可以用下面这个方法，用它可以来观察进度，可以做进度条
         // 第一个参数bytesRead：本次执行下载了多少字节
         // totalBytesRead：已经下载了多少
@@ -103,22 +106,39 @@ static SingleDownLoad *singleDownload = nil;
             if (self.operationArray.count == 0) {
                 // 如果下载数组为空，则不执行任何操作，否则开始下一条
                 [self.modelArray removeObjectAtIndex:0];
-            }else{
+            }else{ 
                 [self.modelArray removeObjectAtIndex:0];
                 Downloading *model = [self.modelArray objectAtIndex:0];
                 [[SingleDownLoad shareSingleDownload] downloadWithModel:model];
             }
+            
             // 将下载成功的MVmodel保存进coreData的DownLoaded里面，用于下载界面展示
             AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
             Downloaded *downloadedModel = [NSEntityDescription insertNewObjectForEntityForName:@"Downloaded" inManagedObjectContext:appDelegate.managedObjectContext];
             downloadedModel.title = model.title;
             downloadedModel.artist = model.artist;
             downloadedModel.thumbnail = model.thumbnail;
+            // 下载已经下载好的文件头像
+            if (model.thumbnail) {
+                SDWebImageManager *manager = [SDWebImageManager sharedManager];
+                NSURL *url = [NSURL URLWithString:model.thumbnail];
+                [manager downloadImageWithURL:url options:SDWebImageRetryFailed progress:^(NSInteger receivedSize, NSInteger expectedSize) {
+                    NSLog(@"已经下载了%.2f" , (float)receivedSize / expectedSize);
+                } completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, BOOL finished, NSURL *imageURL) {
+                    NSLog(@"下载完毕");
+                    self.image = image;
+                }];
+            }
+            NSData *data = [NSData data];
+            // 设置图片格式
+            if (UIImagePNGRepresentation(self.image) == nil) {
+                data = UIImageJPEGRepresentation(self.image, 1.0);
+            }else{
+                data = UIImagePNGRepresentation(self.image);
+            }
+            downloadedModel.image = data;
+            
             [appDelegate saveContext];
-            
-            // 将下载好的文件图片存入缓存区《》《》《》《》《》《》《》《》《》《》《》
-            
-            
             
             // 调用block将下载好的model信息传出去，用于移除对该model的观察对象
             if (self.downloadFinishedBlock) {
@@ -128,14 +148,12 @@ static SingleDownLoad *singleDownload = nil;
             [appDelegate.managedObjectContext deleteObject:model];
             [appDelegate saveContext];
             
-            // 从本身下载数组中删除
-//            [self.modelArray removeObject:model];
             
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 //            NSLog(@"下载失败");
-            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@下载失败" , model.title] delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
+//            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"提示" message:[NSString stringWithFormat:@"%@下载失败" , model.title] delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
             NSLog(@"*&*&^*^&*&^*");
-            [alert show];
+//            [alert show];
         }];
     
     

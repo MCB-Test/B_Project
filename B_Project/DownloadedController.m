@@ -110,8 +110,7 @@
     // 直接重用cell，不用创建，因为仓库里面没有cell的话collectionView会自己创建该、DownloadedCell，不用我们管（更深层次原因：我们已经把DownloadedCell注册给collectionView了，所以collectionView会自己完成cell的创建工作）
     DownloadedCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:kDownloadedCell forIndexPath:indexPath];
     Downloaded *model = self.downloadedArray[indexPath.row];
-#warning 从本地获取视频头像图片
-    [cell.thumbnail sd_setImageWithURL:[NSURL URLWithString:model.thumbnail] placeholderImage:[UIImage imageNamed:@"home"]];
+    cell.thumbnail.image = [UIImage imageWithData:model.image];
     cell.titleLabel.text = model.title;
     [cell.button addTarget:self action:@selector(deleteAction:) forControlEvents:UIControlEventTouchUpInside];
     cell.button.tag = 100 + indexPath.row;

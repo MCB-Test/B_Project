@@ -279,7 +279,7 @@
                 downloadingModel.url240 = model.url240;
                 [appDelegate saveContext];
                 
-                // 将
+                // 将model保存到下载数组
                 [[SingleDownLoad shareSingleDownload].modelArray addObject:downloadingModel];
                 // 开始下载
                 [[SingleDownLoad shareSingleDownload] downloadWithModel:downloadingModel];

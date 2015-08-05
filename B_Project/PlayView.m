@@ -61,11 +61,11 @@
     self.shareButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.shareButton setBackgroundImage:[UIImage imageNamed:@"分享_plyer"] forState:UIControlStateNormal];
     self.shareButton.frame = CGRectMake(7, 22, 27, 40);
-    [self.leftOperationView addSubview:self.shareButton];
+//    [self.leftOperationView addSubview:self.shareButton];
     // 收藏按钮
     self.colletionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.colletionButton setBackgroundImage:[UIImage imageNamed:@"收藏_plyer"] forState:UIControlStateNormal];
-    self.colletionButton.frame = CGRectMake(7, CGRectGetMaxY(self.shareButton.frame) + 10, 27, 40);
+    self.colletionButton.frame = CGRectMake(7, 22, 27, 40);
     [self.leftOperationView addSubview:self.colletionButton];
     // 缓存按钮
     self.saveButton = [UIButton buttonWithType:UIButtonTypeCustom];

@@ -13,7 +13,6 @@
 @property (strong, nonatomic) IBOutlet UIImageView *downloadImageview;
 @property (strong, nonatomic) IBOutlet UILabel *downloadName;
 @property (strong, nonatomic) IBOutlet UIProgressView *downloadProgress;
-@property (strong, nonatomic) IBOutlet UIButton *startAndStopButton;
 @property (strong, nonatomic) IBOutlet UIButton *deleteButton;
 
 

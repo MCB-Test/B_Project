@@ -7,8 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef void(^DeleteBlock)(id model);
 
 @interface MineController : UIViewController
 @property (strong, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic , strong) UILabel *label;
+
+@property (nonatomic , copy) DeleteBlock deleteBlock;
 
 @end

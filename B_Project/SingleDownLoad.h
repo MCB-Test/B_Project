@@ -15,6 +15,8 @@ typedef void(^DownloadFinishBolck)(id model);
 @property (nonatomic , assign) float progress;
 // 保存不同MV下载进度
 @property (nonatomic , strong) NSMutableDictionary *dic;
+// 头像保存
+@property (nonatomic , strong) UIImage *image;
 // 保存要下载的MV信息
 @property (nonatomic , strong) NSMutableArray *modelArray;
 @property (nonatomic , strong) NSMutableArray *operationArray;

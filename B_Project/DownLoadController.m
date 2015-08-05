@@ -9,6 +9,7 @@
 #import "DownLoadController.h"
 #import "DownloadCell.h"
 #import "SVPullToRefresh.h"
+#import "MineController.h"
 
 @interface DownLoadController ()<UITableViewDelegate , UITableViewDataSource>
 
@@ -16,17 +17,19 @@
 
 @implementation DownLoadController
 
+- (void)loadView
+{
+//    NSLog(@"sdkjfbkjgnv");
+    [super loadView];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     
     self.view.backgroundColor = [UIColor purpleColor];
    
-//    __weak typeof(self) weakSelf = self
-//   [self.doladTableView addPullToRefreshWithActionHandler:^{
-//       [self refresh];
-//   }];
-    
+    // 任务下载完毕，block回调方法
     [SingleDownLoad shareSingleDownload].downloadFinishedBlock = ^(Model *model){
         // 下载完毕，移除监听者
         [[SingleDownLoad shareSingleDownload].dic removeObserver:self forKeyPath:model.title];
@@ -34,25 +37,16 @@
         [[SingleDownLoad shareSingleDownload].dic removeObjectForKey:model.title];
         
         // 从下载列表删除该model
-//        if (self.downloadingArray) {
-//            [self.downloadingArray removeAllObjects];
-//        }
-//        self.navigationController.navigationBarHidden = YES;
-//        AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-//        NSFetchRequest *fetchrequest = [NSFetchRequest fetchRequestWithEntityName:@"Downloading"];
-//        NSError *error = nil;
-//        NSArray *fetchArr = [appDelegate.managedObjectContext executeFetchRequest:fetchrequest error:&error];
-//        if (fetchArr) {
-//            self.downloadingArray = [fetchArr mutableCopy];
-//        }else{
-//            NSLog(@"下载页面展示数据获取失败%@" , error);
-//        }
         [self.downloadingArray removeObject:model];
         [self.doladTableView reloadData];
         NSLog(@"%@已经下载完毕" , model.title);
     };
-
     
+    // 清除缓存时候移除监听block回调
+    MineController *mineVC = [[MineController alloc]init];
+    mineVC.deleteBlock = ^(Model *model){
+        [[SingleDownLoad shareSingleDownload].dic removeObserver:self forKeyPath:model.title];
+    };
 }
 
 - (void)refresh
@@ -107,7 +101,6 @@
     cell.downloadImageview.layer.masksToBounds = YES;
     cell.downloadName.text = downloadingModel.title;
     
-    [cell.startAndStopButton addTarget:self action:@selector(stopOrStartAction:) forControlEvents:UIControlEventTouchUpInside];
     [cell.deleteButton addTarget:self action:@selector(deleteAction:) forControlEvents:UIControlEventTouchUpInside];
     cell.deleteButton.tag = 100 + indexPath.row;
     
@@ -126,10 +119,10 @@
 }
 
 #pragma mark - 暂停按钮点击事件
-- (void)stopOrStartAction:(UIButton *)sender
-{
-#warning 从下载队列中暂停*****************
-}
+//- (void)stopOrStartAction:(UIButton *)sender
+//{
+//#warning 从下载队列中暂停*****************
+//}
 
 #pragma mark - 删除按钮点击事件
 - (void)deleteAction:(UIButton *)sender
@@ -138,38 +131,28 @@
      Downloading *dModel = self.downloadingArray[index];
     // 1、移除对该对象的监听
     [[SingleDownLoad shareSingleDownload].dic removeObserver:self forKeyPath:[NSString stringWithFormat:@"%@" , dModel.title]];
-    
-    // 2、从SingleDownLoad中删除
-//    NSInteger a = 1000;
-//    NSString *str = nil;
-//    for (int i = 0; i < [SingleDownLoad shareSingleDownload].modelArray.count; i++) {
-//        Model *model = [SingleDownLoad shareSingleDownload].modelArray[i];
-//        if ([model.title isEqualToString:dModel.title]) {
-//            str = model.source[@"240"];
-//            a = i;
-//            [[SingleDownLoad shareSingleDownload].modelArray removeObjectAtIndex:i];
-//            break;
-//        }
-//    }
-#warning 从下载队列中移除*****************
-    // 3、从下载队列中移除*****************
+#warning 从下载列表删除
+    // 2、从下载队列中移除*****************
     // 现将当前任务取消
-        AFHTTPRequestOperation *opretion = [SingleDownLoad shareSingleDownload].operationArray[0];
+        AFHTTPRequestOperation *opretion = [SingleDownLoad shareSingleDownload].operationArray[index];
     [opretion cancel];
     // 从数组中移除任务
-    [[SingleDownLoad shareSingleDownload].operationArray removeObjectAtIndex:0];
-    [[SingleDownLoad shareSingleDownload].modelArray removeObjectAtIndex:0];
-    // 开始下一条任务
-    if ([SingleDownLoad shareSingleDownload].operationArray.count == 0) {
-        // 如果下载数组为空，则不执行任何操作，否则开始下一条
-    }else{
-//        AFHTTPRequestOperation *op = [[SingleDownLoad shareSingleDownload].operationArray objectAtIndex:0];
-//        [op start];
-        Downloading *model = [[SingleDownLoad shareSingleDownload].modelArray objectAtIndex:0];
-        [[SingleDownLoad shareSingleDownload] downloadWithModel:model];
+    [[SingleDownLoad shareSingleDownload].operationArray removeObjectAtIndex:index];
+    [[SingleDownLoad shareSingleDownload].modelArray removeObjectAtIndex:index];
+    // 如果删除的是第一条任务，则开启下一条任务，否则不用开启新任务
+    if (index == 0) {
+        // 开始下一条任务
+        if ([SingleDownLoad shareSingleDownload].operationArray.count == 0) {
+            // 如果下载数组为空，则不执行任何操作，否则开始下一条
+        }else{
+            //        AFHTTPRequestOperation *op = [[SingleDownLoad shareSingleDownload].operationArray objectAtIndex:0];
+            //        [op start];
+            Downloading *model = [[SingleDownLoad shareSingleDownload].modelArray objectAtIndex:0];
+            [[SingleDownLoad shareSingleDownload] downloadWithModel:model];
+        }
     }
-    
-    // 4、从本地文件删除该对象文件夹
+  
+    // 3、从本地文件删除该对象文件夹
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *cache = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)firstObject];
     NSString *modelPath = [cache stringByAppendingString:[NSString stringWithFormat:@"/%@.mp4" , dModel.title]];
@@ -178,9 +161,9 @@
     } else {
 //        NSLog(@"路径错误，没有该文件夹");
     }
-    // 5、从展示界面的数据数组中删除
+    // 4、从展示界面的数据数组中删除
     [self.downloadingArray removeObjectAtIndex:index];
-    // 7、将下载单例里面保存的下载进度删除
+    // 5、将下载单例里面保存的下载进度删除
     [[SingleDownLoad shareSingleDownload].dic removeObjectForKey:dModel.title];
     NSLog(@"删除第%ld" , index);
     // 6、从coredata中删除
@@ -202,9 +185,12 @@
     NSIndexPath *indexPath = (__bridge NSIndexPath *)context;
     NSString *str = nil;
     
-        // 此时str需要取old，因为在视频下载完毕时候，监听到的old成为1，new并不是1，而是重新置为nl了。
+    if (![[change objectForKey:@"new"] isKindOfClass:[NSNull class]]) {
+        str = [change objectForKey:@"new"];
+    }else{
+        // 此时str需要取old，因为在视频下载完毕时候，监听到的old成为1，new并不是1，而是重新置为空了(不是nil而是NSNull类型)。
         str = [change objectForKey:@"old"];
-    
+    }
     // 获得当前屏幕正在显示的cells
     NSArray *indexPathArray = [self.doladTableView indexPathsForVisibleRows];
     // 如过我们下载时传入的indexPath包含在显示的indexPathArray中，更新cell的progress；

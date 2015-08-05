@@ -423,15 +423,15 @@
 
 
 // 进入该试图控制器自动横屏进行播放
-- (BOOL)shouldAutorotate
-{
-    return YES;
-}
+//- (BOOL)shouldAutorotate
+//{
+//    return YES;
+//}
 
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskLandscape;
-}
+//- (NSUInteger)supportedInterfaceOrientations
+//{
+//    return UIInterfaceOrientationMaskLandscape;
+//}
 
 -(UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
 {
